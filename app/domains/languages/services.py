@@ -6,7 +6,7 @@ from typing import List, Optional, Dict
 
 from .models import UserLanguagePreference
 from .schemas import LanguagePreferenceCreate, LanguagePreferenceUpdate
-from ...core.constants import NativeLanguage, SupportedLanguage, ProficiencyLevel
+from ...core.constants import NativeLanguage, SupportedLanguage, ProficiencyLevel, DailyLearningGoal, LearningReason
 
 class LanguagePreferenceService:
     
@@ -35,6 +35,8 @@ class LanguagePreferenceService:
             user_id=preference.user_id,
             native_language=preference.native_language.value,
             supported_language=preference.supported_language.value,
+            daily_goal=preference.daily_goal.value,
+            learning_reason=preference.learning_reason.value,
             proficiency_level=preference.proficiency_level.value if preference.proficiency_level else None
         )
         db.add(db_preference)
@@ -61,6 +63,8 @@ class LanguagePreferenceService:
         native_language: Optional[str] = None,
         supported_language: Optional[str] = None,
         proficiency_level: Optional[ProficiencyLevel] = None,
+        learning_reason: Optional[LearningReason] = None,
+        daily_goal: Optional[DailyLearningGoal] = None,
         is_active: Optional[bool] = True,
         skip: int = 0,
         limit: int = 100
@@ -75,6 +79,12 @@ class LanguagePreferenceService:
         
         if proficiency_level:
             query = query.filter(UserLanguagePreference.proficiency_level == proficiency_level.value)
+        
+        if learning_reason:
+           query = query.filter(UserLanguagePreference.learning_reason == learning_reason.value)
+        
+        if daily_goal:
+           query = query.filter(UserLanguagePreference.daily_goal == daily_goal.value)
         
         if is_active is not None:
             query = query.filter(UserLanguagePreference.is_active == is_active)
@@ -104,6 +114,10 @@ class LanguagePreferenceService:
                 setattr(preference, field, value.value)
             elif field == "proficiency_level" and value:
                 setattr(preference, field, value.value)
+            elif field == "learning_reason" and value:
+                setattr(preference, field,value.value) 
+            elif field == "daily_goal" and value:
+                setattr(preference, field, value.value)       
             else:
                 setattr(preference, field, value)
         

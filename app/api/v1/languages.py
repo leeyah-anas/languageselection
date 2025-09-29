@@ -11,7 +11,7 @@ from ...domains.languages.schemas import (
     LanguageOptionsResponse,
 )
 from ...domains.languages.services import LanguagePreferenceService
-from ...core.constants import ProficiencyLevel
+from ...core.constants import ProficiencyLevel, LearningReason, DailyLearningGoal
 
 router = APIRouter(prefix="/languages", tags=["Language Learning Preferences"])
 
@@ -35,13 +35,15 @@ async def list_language_preferences(
     native_language: Optional[str] = Query(None, description="Filter by native language"),
     supported_language: Optional[str] = Query(None, description="Filter by target language"),
     proficiency_level: Optional[ProficiencyLevel] = Query(None, description="Filter by proficiency level"),
+    learning_reason: Optional[LearningReason] = Query(None, description="Filter by learning reason"),
+    daily_goal: Optional[DailyLearningGoal] = Query(None, description="Filter by daily goal"),                                                 
     is_active: Optional[bool] = Query(True, description="Filter by active status"),
     skip: int = Query(0, ge=0, description="Skip records for pagination"),
     limit: int = Query(100, ge=1, le=1000, description="Limit records for pagination"),
     db: Session = Depends(get_db)
 ):
     return LanguagePreferenceService.list_preferences(
-        db, native_language, supported_language, proficiency_level, is_active, skip, limit
+        db, native_language, supported_language, proficiency_level, learning_reason, daily_goal, is_active, skip, limit
     )
 
 @router.put("/preferences/{user_id}", response_model=LanguagePreferenceResponse)
